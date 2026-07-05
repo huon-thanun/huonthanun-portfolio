@@ -6,9 +6,10 @@
     <section id="home" class="hero">
       <div class="container hero__inner">
         <div class="hero__text">
-          <div v-if="profile.avatar_url" class="hero__avatar">
+          <button v-if="profile.avatar_url" class="hero__avatar" @click="showProfileDetail = true"
+            aria-label="View profile details">
             <img :src="profile.avatar_url" :alt="profile.full_name" />
-          </div>
+          </button>
           <p class="eyebrow">available for work</p>
           <h1 class="hero__title">
             Hi, I'm {{ profile.full_name || 'a developer' }}.<br />
@@ -47,7 +48,9 @@
           <h2 class="section-title">A little about me</h2>
         </div>
         <div class="about__grid">
-          <p class="about__text">{{ profile.about_text || 'About information will appear here once added from the dashboard.' }}</p>
+          <p class="about__text">
+            {{ profile.about_text || 'About information will appear here once added from thedashboard.' }}
+          </p>
           <ul class="about__meta mono">
             <li v-if="profile.location"><span>location</span>{{ profile.location }}</li>
             <li v-if="profile.email"><span>email</span>{{ profile.email }}</li>
@@ -87,7 +90,7 @@
           <h2 class="section-title">Selected projects</h2>
         </div>
         <div class="projects__grid">
-          <article v-for="p in projects" :key="p.id" class="project-card card">
+          <article v-for="p in projects" :key="p.id" class="project-card card" @click="openProjectDetail(p)">
             <div class="project-card__image" v-if="p.image_url">
               <img :src="p.image_url" :alt="p.title" />
             </div>
@@ -97,7 +100,7 @@
               <div class="project-card__tech">
                 <span v-for="t in techList(p.tech_stack)" :key="t" class="badge">{{ t }}</span>
               </div>
-              <div class="project-card__links">
+              <div class="project-card__links" @click.stop>
                 <a v-if="p.demo_url" :href="p.demo_url" target="_blank" class="btn btn-sm">live demo</a>
                 <a v-if="p.repo_url" :href="p.repo_url" target="_blank" class="btn btn-sm">source</a>
               </div>
@@ -152,30 +155,14 @@
           <p class="contact__intro">Have a project in mind or just want to say hello? Send a message below.</p>
         </div>
 
-        <form class="contact__form" @submit.prevent="submitMessage">
+        <form class="contact__form" @submit.prevent="submitMessage" novalidate>
           <div class="contact__row">
-            <div class="field">
-              <label for="c-name">Name</label>
-              <input id="c-name" v-model="form.name" type="text" required />
-            </div>
-            <div class="field">
-              <label for="c-email">Email</label>
-              <input id="c-email" v-model="form.email" type="email" required />
-            </div>
+            <BaseInput v-model="form.name" label="Name" required :error="errors.name" />
+            <BaseInput v-model="form.email" label="Email" type="email" required :error="errors.email" />
           </div>
-          <div class="field">
-            <label for="c-subject">Subject</label>
-            <input id="c-subject" v-model="form.subject" type="text" />
-          </div>
-          <div class="field">
-            <label for="c-message">Message</label>
-            <textarea id="c-message" v-model="form.message" required></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary" :disabled="sending">
-            {{ sending ? 'sending…' : 'send message' }}
-          </button>
-          <p v-if="sent" class="helper-success">Message sent — thank you! I'll get back to you soon.</p>
-          <p v-if="sendError" class="helper-error">{{ sendError }}</p>
+          <BaseInput v-model="form.subject" label="Subject" />
+          <BaseTextarea v-model="form.message" label="Message" required :error="errors.message" />
+          <BaseButton type="submit" variant="primary" :loading="sending" loading-text="sending…" label="send message" />
         </form>
       </div>
     </section>
@@ -191,18 +178,74 @@
         </div>
       </div>
     </footer>
+
+    <!-- ============ PROJECT DETAIL MODAL ============ -->
+    <BaseModal v-model="showProjectDetail" :title="viewingProject?.title || ''" size="lg">
+      <div v-if="viewingProject" class="detail">
+        <div v-if="viewingProject.image_url" class="detail__image">
+          <img :src="viewingProject.image_url" :alt="viewingProject.title" />
+        </div>
+        <p class="detail__desc">{{ viewingProject.description || 'No description provided.' }}</p>
+        <div class="detail__tech">
+          <span v-for="t in techList(viewingProject.tech_stack)" :key="t" class="badge">{{ t }}</span>
+        </div>
+      </div>
+      <template #footer>
+        <a v-if="viewingProject?.demo_url" :href="viewingProject.demo_url" target="_blank" class="btn btn-primary">live
+          demo</a>
+        <a v-if="viewingProject?.repo_url" :href="viewingProject.repo_url" target="_blank" class="btn">source</a>
+        <button type="button" class="btn" @click="showProjectDetail = false">close</button>
+      </template>
+    </BaseModal>
+
+    <!-- ============ PROFILE DETAIL MODAL ============ -->
+    <BaseModal v-model="showProfileDetail" :title="profile.full_name || ''">
+      <div class="detail">
+        <div v-if="profile.avatar_url" class="detail__avatar">
+          <img :src="profile.avatar_url" :alt="profile.full_name" />
+        </div>
+        <p class="detail__title-line">{{ profile.title }}</p>
+        <p class="detail__desc">{{ profile.about_text }}</p>
+        <dl class="detail__meta">
+          <div v-if="profile.location">
+            <dt>Location</dt>
+            <dd>{{ profile.location }}</dd>
+          </div>
+          <div v-if="profile.email">
+            <dt>Email</dt>
+            <dd>{{ profile.email }}</dd>
+          </div>
+          <div v-if="profile.phone">
+            <dt>Phone</dt>
+            <dd>{{ profile.phone }}</dd>
+          </div>
+        </dl>
+      </div>
+      <template #footer>
+        <a href="#contact" class="btn btn-primary" @click="showProfileDetail = false">get in touch</a>
+        <button type="button" class="btn" @click="showProfileDetail = false">close</button>
+      </template>
+    </BaseModal>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import SiteNavbar from '../../components/SiteNavbar.vue'
+import BaseModal from '../../components/base/BaseModal.vue'
+import BaseInput from '../../components/base/BaseInput.vue'
+import BaseTextarea from '../../components/base/BaseTextarea.vue'
+import BaseButton from '../../components/base/BaseButton.vue'
 import profileService from '../../services/profileService'
 import projectService from '../../services/projectService'
 import skillService from '../../services/skillService'
 import experienceService from '../../services/experienceService'
 import educationService from '../../services/educationService'
 import messageService from '../../services/messageService'
+import { useToastStore } from '../../stores/toastStore'
+import { validate, isRequired, isEmail, minLength } from '../../utils/validators'
+
+const toast = useToastStore()
 
 const profile = ref({})
 const projects = ref([])
@@ -210,10 +253,18 @@ const skills = ref([])
 const experience = ref([])
 const education = ref([])
 
+const showProjectDetail = ref(false)
+const viewingProject = ref(null)
+const showProfileDetail = ref(false)
+
+function openProjectDetail(p) {
+  viewingProject.value = p
+  showProjectDetail.value = true
+}
+
 const form = reactive({ name: '', email: '', subject: '', message: '' })
+const errors = reactive({})
 const sending = ref(false)
-const sent = ref(false)
-const sendError = ref('')
 
 function techList(str) {
   if (!str) return []
@@ -227,19 +278,35 @@ function formatRange(start, end) {
   return `${s} — ${e}`
 }
 
+function validateForm() {
+  const result = validate(form, {
+    name: [[isRequired, 'Please enter your name.']],
+    email: [
+      [isRequired, 'Please enter your email.'],
+      [isEmail, 'Please enter a valid email address.']
+    ],
+    message: [
+      [isRequired, 'Please enter a message.'],
+      [(v) => minLength(v, 10), 'Message should be at least 10 characters.']
+    ]
+  })
+  Object.keys(errors).forEach((k) => delete errors[k])
+  Object.assign(errors, result)
+  return Object.keys(result).length === 0
+}
+
 async function submitMessage() {
+  if (!validateForm()) return
   sending.value = true
-  sendError.value = ''
-  sent.value = false
   try {
     await messageService.send({ ...form })
-    sent.value = true
+    toast.success("Message sent — thank you! I'll get back to you soon.")
     form.name = ''
     form.email = ''
     form.subject = ''
     form.message = ''
   } catch (err) {
-    sendError.value = err.response?.data?.message || 'Could not send your message. Please try again.'
+    toast.error(err.response?.data?.message || 'Could not send your message. Please try again.')
   } finally {
     sending.value = false
   }
@@ -288,7 +355,9 @@ onMounted(async () => {
   margin-top: var(--space-4);
 }
 
-.hero__accent { color: var(--accent); }
+.hero__accent {
+  color: var(--accent);
+}
 
 .hero__avatar {
   width: 84px;
@@ -298,12 +367,88 @@ onMounted(async () => {
   border: 2px solid var(--accent);
   margin-bottom: var(--space-4);
   box-shadow: 0 0 0 4px var(--accent-soft);
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.hero__avatar:hover {
+  transform: scale(1.05);
 }
 
 .hero__avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.detail__image,
+.detail__avatar {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: var(--space-5);
+  max-height: 280px;
+}
+
+.detail__avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  max-height: none;
+}
+
+.detail__image img,
+.detail__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detail__title-line {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  margin-bottom: var(--space-4);
+}
+
+.detail__desc {
+  color: var(--text-dim);
+  margin-bottom: var(--space-4);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.detail__tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.detail__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.detail__meta>div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-3);
+}
+
+.detail__meta dt {
+  color: var(--text-faint);
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+}
+
+.detail__meta dd {
+  margin: 0;
+  font-size: 0.88rem;
 }
 
 .hero__tagline {
@@ -336,11 +481,29 @@ onMounted(async () => {
   border-bottom: 1px solid var(--border);
 }
 
-.term__dot { width: 10px; height: 10px; border-radius: 50%; }
-.term__dot--r { background: #f87171; }
-.term__dot--y { background: #f0b429; }
-.term__dot--g { background: #4ade80; }
-.term__filename { margin-left: var(--space-3); color: var(--text-faint); font-size: 0.78rem; }
+.term__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.term__dot--r {
+  background: #f87171;
+}
+
+.term__dot--y {
+  background: #f0b429;
+}
+
+.term__dot--g {
+  background: #4ade80;
+}
+
+.term__filename {
+  margin-left: var(--space-3);
+  color: var(--text-faint);
+  font-size: 0.78rem;
+}
 
 .term__body {
   padding: var(--space-5);
@@ -348,18 +511,35 @@ onMounted(async () => {
   min-height: 220px;
 }
 
-.term__body p { margin-bottom: var(--space-3); }
-.term__prompt { color: var(--accent); margin-right: var(--space-2); }
-.term__out { color: var(--text-dim); padding-left: 1.2rem; }
+.term__body p {
+  margin-bottom: var(--space-3);
+}
+
+.term__prompt {
+  color: var(--accent);
+  margin-right: var(--space-2);
+}
+
+.term__out {
+  color: var(--text-dim);
+  padding-left: 1.2rem;
+}
+
 .term__cursor {
   display: inline-block;
   animation: blink 1s step-end infinite;
   color: var(--accent);
 }
 
-@keyframes blink { 50% { opacity: 0; } }
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
 
-.section--elev { background: var(--bg-elev); }
+.section--elev {
+  background: var(--bg-elev);
+}
 
 .about__grid {
   display: grid;
@@ -380,8 +560,17 @@ onMounted(async () => {
   font-size: 0.85rem;
 }
 
-.about__meta li { display: flex; flex-direction: column; gap: 2px; }
-.about__meta span { color: var(--text-faint); font-size: 0.72rem; text-transform: uppercase; }
+.about__meta li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.about__meta span {
+  color: var(--text-faint);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
 
 .skills__grid {
   display: grid;
@@ -389,11 +578,32 @@ onMounted(async () => {
   gap: var(--space-4);
 }
 
-.skill-card { padding: var(--space-4); }
-.skill-card__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); }
-.skill-card__name { font-size: 0.95rem; }
-.skill-card__bar { height: 6px; background: var(--bg-elev-2); border-radius: 999px; overflow: hidden; }
-.skill-card__fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+.skill-card {
+  padding: var(--space-4);
+}
+
+.skill-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.skill-card__name {
+  font-size: 0.95rem;
+}
+
+.skill-card__bar {
+  height: 6px;
+  background: var(--bg-elev-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.skill-card__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
 
 .projects__grid {
   display: grid;
@@ -401,14 +611,61 @@ onMounted(async () => {
   gap: var(--space-5);
 }
 
-.project-card { overflow: hidden; display: flex; flex-direction: column; }
-.project-card__image { height: 180px; overflow: hidden; background: var(--bg-elev-2); }
-.project-card__image img { width: 100%; height: 100%; object-fit: cover; }
-.project-card__body { padding: var(--space-5); flex: 1; display: flex; flex-direction: column; }
-.project-card__title { font-size: 1.1rem; margin-bottom: var(--space-2); }
-.project-card__desc { color: var(--text-dim); font-size: 0.9rem; flex: 1; margin-bottom: var(--space-4); }
-.project-card__tech { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-4); }
-.project-card__links { display: flex; gap: var(--space-3); }
+.project-card {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.project-card__image {
+  height: 180px;
+  overflow: hidden;
+  background: var(--bg-elev-2);
+}
+
+.project-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-card__body {
+  padding: var(--space-5);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.project-card__title {
+  font-size: 1.1rem;
+  margin-bottom: var(--space-2);
+}
+
+.project-card__desc {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  flex: 1;
+  margin-bottom: var(--space-4);
+}
+
+.project-card__tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.project-card__links {
+  display: flex;
+  gap: var(--space-3);
+}
 
 .timeline-grid {
   display: grid;
@@ -433,15 +690,46 @@ onMounted(async () => {
   background: var(--accent);
 }
 
-.timeline__date { color: var(--text-faint); font-size: 0.78rem; margin-bottom: var(--space-2); }
-.timeline__title { font-size: 1rem; margin-bottom: var(--space-2); }
-.timeline__desc { color: var(--text-dim); font-size: 0.9rem; }
+.timeline__date {
+  color: var(--text-faint);
+  font-size: 0.78rem;
+  margin-bottom: var(--space-2);
+}
 
-.contact__wrap { max-width: 640px; }
-.contact__intro { color: var(--text-dim); margin-top: var(--space-3); }
-.contact__row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+.timeline__title {
+  font-size: 1rem;
+  margin-bottom: var(--space-2);
+}
 
-.empty-note { color: var(--text-faint); font-family: var(--font-mono); font-size: 0.85rem; }
+.timeline__desc {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.contact__wrap {
+  max-width: 640px;
+}
+
+.contact__intro {
+  color: var(--text-dim);
+  margin-top: var(--space-3);
+}
+
+.contact__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+:deep(.field-invalid) {
+  border-color: var(--danger) !important;
+}
+
+.empty-note {
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
 
 .footer {
   border-top: 1px solid var(--border);
@@ -456,14 +744,34 @@ onMounted(async () => {
   font-size: 0.85rem;
 }
 
-.footer__social { display: flex; gap: var(--space-5); }
-.footer__social a { color: var(--text-dim); }
-.footer__social a:hover { color: var(--accent); }
+.footer__social {
+  display: flex;
+  gap: var(--space-5);
+}
+
+.footer__social a {
+  color: var(--text-dim);
+}
+
+.footer__social a:hover {
+  color: var(--accent);
+}
 
 @media (max-width: 900px) {
-  .hero__inner { grid-template-columns: 1fr; }
-  .about__grid { grid-template-columns: 1fr; }
-  .timeline-grid { grid-template-columns: 1fr; }
-  .contact__row { grid-template-columns: 1fr; }
+  .hero__inner {
+    grid-template-columns: 1fr;
+  }
+
+  .about__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact__row {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

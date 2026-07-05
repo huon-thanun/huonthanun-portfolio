@@ -10,30 +10,30 @@
     <button v-if="modelValue" type="button" class="btn btn-sm btn-danger" @click="$emit('update:modelValue', '')">
       remove
     </button>
-    <p v-if="error" class="helper-error">{{ error }}</p>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import uploadService from '../services/uploadService'
+import { useToastStore } from '../stores/toastStore'
 
 defineProps({ modelValue: { type: String, default: '' } })
 const emit = defineEmits(['update:modelValue'])
 
+const toast = useToastStore()
 const uploading = ref(false)
-const error = ref('')
 
 async function handleFile(e) {
   const file = e.target.files[0]
   if (!file) return
   uploading.value = true
-  error.value = ''
   try {
     const { data } = await uploadService.upload(file)
     emit('update:modelValue', data.url)
+    toast.success('Image uploaded.')
   } catch (err) {
-    error.value = err.response?.data?.message || 'Upload failed.'
+    toast.error(err.response?.data?.message || 'Upload failed.')
   } finally {
     uploading.value = false
   }
