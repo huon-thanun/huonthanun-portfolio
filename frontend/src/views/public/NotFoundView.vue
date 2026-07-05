@@ -21,10 +21,12 @@
   gap: var(--space-3);
   padding: var(--space-5);
 }
+
 .notfound__code {
   font-size: 4rem;
   color: var(--accent);
 }
+
 .notfound__desc {
   color: var(--text-dim);
   margin-bottom: var(--space-4);

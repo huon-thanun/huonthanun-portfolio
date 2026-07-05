@@ -99,9 +99,19 @@ onMounted(fetchStats)
 </script>
 
 <style scoped>
-.page-head { margin-bottom: var(--space-7); }
-.page-title { font-size: 1.8rem; margin-top: var(--space-2); }
-.page-sub { color: var(--text-dim); margin-top: var(--space-2); }
+.page-head {
+  margin-bottom: var(--space-7);
+}
+
+.page-title {
+  font-size: 1.8rem;
+  margin-top: var(--space-2);
+}
+
+.page-sub {
+  color: var(--text-dim);
+  margin-top: var(--space-2);
+}
 
 .stats-grid {
   display: grid;
@@ -110,12 +120,37 @@ onMounted(fetchStats)
   margin-bottom: var(--space-7);
 }
 
-.stat-card { padding: var(--space-5); }
-.stat-card__label { color: var(--text-dim); font-size: 0.78rem; text-transform: uppercase; }
-.stat-card__value { font-family: var(--font-display); font-size: 2rem; margin-top: var(--space-2); }
-.stat-card--accent .stat-card__value { color: var(--danger); }
+.stat-card {
+  padding: var(--space-5);
+}
 
-.chart-card { padding: var(--space-6); }
-.chart-title { margin-top: var(--space-2); margin-bottom: var(--space-5); font-size: 1.2rem; }
-.chart-wrap { height: 320px; }
+.stat-card__label {
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.stat-card__value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  margin-top: var(--space-2);
+}
+
+.stat-card--accent .stat-card__value {
+  color: var(--danger);
+}
+
+.chart-card {
+  padding: var(--space-6);
+}
+
+.chart-title {
+  margin-top: var(--space-2);
+  margin-bottom: var(--space-5);
+  font-size: 1.2rem;
+}
+
+.chart-wrap {
+  height: 320px;
+}
 </style>

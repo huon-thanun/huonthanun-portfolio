@@ -5,18 +5,17 @@
       <h1 class="login__title">Sign in to dashboard</h1>
 
       <div class="field">
-        <label for="email">Email</label>
+        <label for="email">Email <span class="field__required">*</span></label>
         <input id="email" v-model="email" type="email" required autocomplete="username" />
       </div>
       <div class="field">
-        <label for="password">Password</label>
+        <label for="password">Password <span class="field__required">*</span></label>
         <input id="password" v-model="password" type="password" required autocomplete="current-password" />
       </div>
 
       <button type="submit" class="btn btn-primary login__submit" :disabled="loading">
         {{ loading ? 'signing in…' : 'sign in' }}
       </button>
-      <p v-if="error" class="helper-error">{{ error }}</p>
 
       <router-link to="/" class="login__back mono">← back to site</router-link>
     </form>
@@ -27,24 +26,24 @@
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '../../stores/authStore'
+import { useToastStore } from '../../stores/toastStore'
 
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
-const error = ref('')
 
 const auth = useAuthStore()
+const toast = useToastStore()
 const router = useRouter()
 const route = useRoute()
 
 async function submit() {
   loading.value = true
-  error.value = ''
   try {
     await auth.login({ email: email.value, password: password.value })
     router.push(route.query.redirect || '/admin/dashboard')
   } catch (err) {
-    error.value = err.response?.data?.message || 'Login failed. Please check your credentials.'
+    toast.error(err.response?.data?.message || 'Login failed. Please check your credentials.')
   } finally {
     loading.value = false
   }
@@ -84,5 +83,13 @@ async function submit() {
   color: var(--text-dim);
   font-size: 0.82rem;
 }
-.login__back:hover { color: var(--accent); }
+
+.login__back:hover {
+  color: var(--accent);
+}
+
+.field__required {
+  color: var(--danger);
+  margin-left: 2px;
+}
 </style>
