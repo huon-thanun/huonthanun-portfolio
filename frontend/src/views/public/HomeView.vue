@@ -8,7 +8,7 @@
         <div class="hero__text">
           <button v-if="profile.avatar_url" class="hero__avatar" @click="showProfileDetail = true"
             aria-label="View profile details">
-            <img :src="profile.avatar_url" :alt="profile.full_name" />
+            <img :src="profile.avatar_url" :alt="profile.full_name" @error="onImageError" />
           </button>
           <p class="eyebrow">available for work</p>
           <h1 class="hero__title">
@@ -92,7 +92,7 @@
         <div class="projects__grid">
           <article v-for="p in projects" :key="p.id" class="project-card card" @click="openProjectDetail(p)">
             <div class="project-card__image" v-if="p.image_url">
-              <img :src="p.image_url" :alt="p.title" />
+              <img :src="p.image_url" :alt="p.title" @error="onImageError" />
             </div>
             <div class="project-card__body">
               <h3 class="project-card__title">{{ p.title }}</h3>
@@ -183,7 +183,7 @@
     <BaseModal v-model="showProjectDetail" :title="viewingProject?.title || ''" size="lg">
       <div v-if="viewingProject" class="detail">
         <div v-if="viewingProject.image_url" class="detail__image">
-          <img :src="viewingProject.image_url" :alt="viewingProject.title" />
+          <img :src="viewingProject.image_url" :alt="viewingProject.title" @error="onImageError" />
         </div>
         <p class="detail__desc">{{ viewingProject.description || 'No description provided.' }}</p>
         <div class="detail__tech">
@@ -202,7 +202,7 @@
     <BaseModal v-model="showProfileDetail" :title="profile.full_name || ''">
       <div class="detail">
         <div v-if="profile.avatar_url" class="detail__avatar">
-          <img :src="profile.avatar_url" :alt="profile.full_name" />
+          <img :src="profile.avatar_url" :alt="profile.full_name" @error="onImageError" />
         </div>
         <p class="detail__title-line">{{ profile.title }}</p>
         <p class="detail__desc">{{ profile.about_text }}</p>
@@ -244,6 +244,7 @@ import educationService from '../../services/educationService'
 import messageService from '../../services/messageService'
 import { useToastStore } from '../../stores/toastStore'
 import { validate, isRequired, isEmail, minLength } from '../../utils/validators'
+import { onImageError } from '../../utils/imageFallback.js'
 
 const toast = useToastStore()
 

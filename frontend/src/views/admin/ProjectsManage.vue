@@ -11,7 +11,7 @@
 
     <div class="list">
       <div v-for="p in projects" :key="p.id" class="list-item card">
-        <div class="list-item__thumb" v-if="p.image_url"><img :src="p.image_url" /></div>
+        <div class="list-item__thumb" v-if="p.image_url"><img :src="p.image_url" @error="onImageError" /></div>
         <div class="list-item__body">
           <h3>{{ p.title }}</h3>
           <p class="list-item__meta mono">{{ p.tech_stack }}</p>
@@ -55,7 +55,7 @@
     <BaseModal v-model="showView" :title="viewing?.title || ''" size="lg">
       <div v-if="viewing" class="view-detail">
         <div v-if="viewing.image_url" class="view-detail__image">
-          <img :src="viewing.image_url" :alt="viewing.title" />
+          <img :src="viewing.image_url" :alt="viewing.title" @error="onImageError" />
         </div>
         <p class="view-detail__desc">{{ viewing.description || 'No description provided.' }}</p>
         <div class="view-detail__tech">
@@ -102,6 +102,7 @@ import BaseCheckbox from '../../components/base/BaseCheckbox.vue'
 import projectService from '../../services/projectService'
 import { useToastStore } from '../../stores/toastStore'
 import { validate, isRequired, isUrl } from '../../utils/validators'
+import { onImageError } from '../../utils/imageFallback'
 
 const toast = useToastStore()
 
