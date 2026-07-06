@@ -13,7 +13,7 @@
     <div class="profile-grid">
       <div class="card profile-side">
         <div class="profile-side__avatar" v-if="profile.avatar_url">
-          <img :src="profile.avatar_url" :alt="profile.full_name" />
+          <img :src="profile.avatar_url" :alt="profile.full_name" @error="onImageError" />
         </div>
         <div v-else class="profile-side__avatar profile-side__avatar--empty">
           {{ initials }}
@@ -101,6 +101,7 @@ import ImageUploader from '../../components/ImageUploader.vue'
 import profileService from '../../services/profileService'
 import { useToastStore } from '../../stores/toastStore'
 import { validate, isRequired, isEmail, isUrl } from '../../utils/validators'
+import { onImageError } from '../../utils/imageFallback'
 
 const toast = useToastStore()
 

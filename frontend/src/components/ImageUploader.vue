@@ -1,7 +1,7 @@
 <template>
   <div class="uploader">
     <div class="uploader__preview" v-if="modelValue">
-      <img :src="modelValue" alt="Preview" />
+      <img :src="modelValue" alt="Preview" @error="onImageError" />
     </div>
     <label class="btn btn-sm uploader__btn">
       {{ uploading ? 'uploading…' : (modelValue ? 'change image' : 'upload image') }}
@@ -17,6 +17,7 @@
 import { ref } from 'vue'
 import uploadService from '../services/uploadService'
 import { useToastStore } from '../stores/toastStore'
+import { onImageError } from '../utils/imageFallback'
 
 defineProps({ modelValue: { type: String, default: '' } })
 const emit = defineEmits(['update:modelValue'])
@@ -47,6 +48,7 @@ async function handleFile(e) {
   gap: var(--space-3);
   flex-wrap: wrap;
 }
+
 .uploader__preview {
   width: 56px;
   height: 56px;
@@ -54,6 +56,14 @@ async function handleFile(e) {
   overflow: hidden;
   border: 1px solid var(--border);
 }
-.uploader__preview img { width: 100%; height: 100%; object-fit: cover; }
-.uploader__btn { display: inline-flex; }
+
+.uploader__preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.uploader__btn {
+  display: inline-flex;
+}
 </style>

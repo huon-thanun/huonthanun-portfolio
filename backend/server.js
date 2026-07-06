@@ -1,9 +1,18 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
+
+// Ensure the uploads folder always exists (it's gitignored, so a fresh
+// clone/checkout won't have it — without this, image uploads would fail).
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log('Created missing uploads/ directory.');
+}
 
 // ---------- Middleware ----------
 app.use(cors()); // allow requests from the Vue frontend (any origin, for dev simplicity)
@@ -11,7 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve uploaded images statically
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(uploadsDir));
 
 // ---------- Routes ----------
 app.use('/api/auth', require('./routes/auth'));
