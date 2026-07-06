@@ -360,21 +360,44 @@ onMounted(async () => {
 }
 
 .hero__avatar {
-  width: 84px;
-  height: 84px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   overflow: hidden;
-  border: 2px solid var(--accent);
-  margin-bottom: var(--space-4);
-  box-shadow: 0 0 0 4px var(--accent-soft);
+  border: 3px solid var(--accent);
+  margin-bottom: var(--space-5);
+  box-shadow: 0 0 0 6px var(--accent-soft), 0 12px 30px rgba(0, 0, 0, 0.35);
   padding: 0;
   background: none;
   cursor: pointer;
-  transition: transform 0.15s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+
+.hero__avatar::after {
+  content: '↗ view profile';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 8, 14, 0.75);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  text-align: center;
+  padding: var(--space-2);
 }
 
 .hero__avatar:hover {
-  transform: scale(1.05);
+  transform: scale(1.04);
+  box-shadow: 0 0 0 8px var(--accent-soft), 0 16px 36px rgba(0, 0, 0, 0.4);
+}
+
+.hero__avatar:hover::after {
+  opacity: 1;
 }
 
 .hero__avatar img {
@@ -392,10 +415,11 @@ onMounted(async () => {
 }
 
 .detail__avatar {
-  width: 96px;
-  height: 96px;
+  width: 130px;
+  height: 130px;
   border-radius: 50%;
   max-height: none;
+  border: 2px solid var(--accent);
 }
 
 .detail__image img,
