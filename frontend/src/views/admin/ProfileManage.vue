@@ -10,50 +10,50 @@
     </header>
 
     <!-- ============ READ-ONLY VIEW ============ -->
-    <div class="card view-card">
-      <div class="view-card__top">
-        <div v-if="profile.avatar_url" class="view-card__avatar">
+    <div class="profile-grid">
+      <div class="card profile-side">
+        <div class="profile-side__avatar" v-if="profile.avatar_url">
           <img :src="profile.avatar_url" :alt="profile.full_name" />
         </div>
-        <div>
-          <h2 class="view-card__name">{{ profile.full_name || '—' }}</h2>
-          <p class="view-card__title mono">{{ profile.title || '—' }}</p>
+        <div v-else class="profile-side__avatar profile-side__avatar--empty">
+          {{ initials }}
+        </div>
+        <h2 class="profile-side__name">{{ profile.full_name || '—' }}</h2>
+        <p class="profile-side__title mono">{{ profile.title || '—' }}</p>
+        <p v-if="profile.tagline" class="profile-side__tagline">{{ profile.tagline }}</p>
+
+        <div class="profile-side__links">
+          <a v-if="profile.github_url" :href="profile.github_url" target="_blank" class="badge">GitHub</a>
+          <a v-if="profile.linkedin_url" :href="profile.linkedin_url" target="_blank" class="badge">LinkedIn</a>
+          <a v-if="profile.facebook_url" :href="profile.facebook_url" target="_blank" class="badge">Facebook</a>
+          <a v-if="profile.resume_url" :href="profile.resume_url" target="_blank" class="badge">Resume</a>
         </div>
       </div>
 
-      <p v-if="profile.tagline" class="view-card__tagline">{{ profile.tagline }}</p>
-      <p class="view-card__about">{{ profile.about_text || 'No about text set yet.' }}</p>
+      <div class="card profile-main">
+        <section class="profile-section">
+          <p class="profile-section__label mono">about</p>
+          <p class="profile-section__about">{{ profile.about_text || 'No about text set yet.' }}</p>
+        </section>
 
-      <dl class="view-card__meta">
-        <div>
-          <dt>Email</dt>
-          <dd>{{ profile.email || '—' }}</dd>
-        </div>
-        <div>
-          <dt>Phone</dt>
-          <dd>{{ profile.phone || '—' }}</dd>
-        </div>
-        <div>
-          <dt>Location</dt>
-          <dd>{{ profile.location || '—' }}</dd>
-        </div>
-        <div>
-          <dt>GitHub</dt>
-          <dd>{{ profile.github_url || '—' }}</dd>
-        </div>
-        <div>
-          <dt>LinkedIn</dt>
-          <dd>{{ profile.linkedin_url || '—' }}</dd>
-        </div>
-        <div>
-          <dt>Facebook</dt>
-          <dd>{{ profile.facebook_url || '—' }}</dd>
-        </div>
-        <div>
-          <dt>Resume</dt>
-          <dd>{{ profile.resume_url || '—' }}</dd>
-        </div>
-      </dl>
+        <section class="profile-section">
+          <p class="profile-section__label mono">contact information</p>
+          <div class="profile-info-grid">
+            <div class="info-tile">
+              <p class="info-tile__label mono">email</p>
+              <p class="info-tile__value">{{ profile.email || '—' }}</p>
+            </div>
+            <div class="info-tile">
+              <p class="info-tile__label mono">phone</p>
+              <p class="info-tile__value">{{ profile.phone || '—' }}</p>
+            </div>
+            <div class="info-tile">
+              <p class="info-tile__label mono">location</p>
+              <p class="info-tile__value">{{ profile.location || '—' }}</p>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
 
     <!-- ============ EDIT MODAL ============ -->
@@ -92,7 +92,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, computed, onMounted } from 'vue'
 import BaseModal from '../../components/base/BaseModal.vue'
 import BaseInput from '../../components/base/BaseInput.vue'
 import BaseTextarea from '../../components/base/BaseTextarea.vue'
@@ -108,6 +108,11 @@ const profile = ref({})
 const showForm = ref(false)
 const saving = ref(false)
 const errors = reactive({})
+
+const initials = computed(() => {
+  const name = profile.value.full_name || ''
+  return name.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('') || '?'
+})
 
 const emptyForm = () => ({
   full_name: '', title: '', tagline: '', about_text: '', email: '', phone: '',
@@ -187,82 +192,137 @@ onMounted(load)
   max-width: 480px;
 }
 
-.view-card {
-  padding: var(--space-6);
-  max-width: 720px;
+.profile-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: var(--space-5);
+  align-items: start;
 }
 
-.view-card__top {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  margin-bottom: var(--space-5);
+.profile-side {
+  padding: var(--space-7) var(--space-6);
+  text-align: center;
+  background: linear-gradient(180deg, var(--accent-soft), transparent 60%), var(--bg-elev);
 }
 
-.view-card__avatar {
-  width: 64px;
-  height: 64px;
+.profile-side__avatar {
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
   overflow: hidden;
-  flex-shrink: 0;
-  border: 1px solid var(--border);
+  margin: 0 auto var(--space-5);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 0 5px var(--accent-soft);
 }
 
-.view-card__avatar img {
+.profile-side__avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.view-card__name {
-  font-size: 1.3rem;
-}
-
-.view-card__title {
+.profile-side__avatar--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
   color: var(--accent);
-  font-size: 0.85rem;
-  margin-top: var(--space-1);
+  background: var(--bg-elev-2);
 }
 
-.view-card__tagline {
-  color: var(--text);
-  font-size: 1rem;
+.profile-side__name {
+  font-size: 1.25rem;
+}
+
+.profile-side__title {
+  color: var(--accent);
+  font-size: 0.82rem;
+  margin-top: var(--space-2);
+}
+
+.profile-side__tagline {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  margin-top: var(--space-4);
+  line-height: 1.5;
+}
+
+.profile-side__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+}
+
+.profile-main {
+  padding: var(--space-7) var(--space-6);
+}
+
+.profile-section+.profile-section {
+  margin-top: var(--space-7);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border);
+}
+
+.profile-section__label {
+  color: var(--accent);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   margin-bottom: var(--space-4);
 }
 
-.view-card__about {
-  color: var(--text-dim);
-  line-height: 1.6;
-  margin-bottom: var(--space-6);
+.profile-section__about {
+  color: var(--text);
+  line-height: 1.7;
   white-space: pre-wrap;
+  font-size: 0.98rem;
 }
 
-.view-card__meta {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.view-card__meta>div {
-  display: flex;
-  justify-content: space-between;
+.profile-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-4);
-  border-top: 1px solid var(--border);
-  padding-top: var(--space-3);
 }
 
-.view-card__meta dt {
+.info-tile {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.info-tile__label {
   color: var(--text-faint);
-  font-size: 0.78rem;
-  font-family: var(--font-mono);
-  flex-shrink: 0;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-2);
 }
 
-.view-card__meta dd {
-  margin: 0;
-  font-size: 0.88rem;
-  text-align: right;
-  word-break: break-all;
+.info-tile__value {
+  font-size: 0.92rem;
+  word-break: break-word;
+}
+
+@media (max-width: 860px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-info-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 500px) {
+  .profile-info-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .form-row {
