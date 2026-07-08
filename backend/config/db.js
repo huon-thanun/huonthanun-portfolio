@@ -1,7 +1,6 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-// Connection pool to MySQL (works with MySQL Workbench / VSCode MySQL extension databases)
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   port: process.env.DB_PORT || 3306,
@@ -10,7 +9,12 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME || 'portfolio_db',
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  // ត្រូវតែបន្ថែមបន្ទាត់ខាងក្រោមនេះ៖
+  ssl: {
+    minVersion: 'TLSv1.2',
+    rejectUnauthorized: true
+  }
 });
 
 module.exports = pool;
