@@ -1,26 +1,19 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
-const fs = require('fs');
 require('dotenv').config();
+const pool = require('./config/db');
 
 const app = express();
 
-// Ensure the uploads folder always exists (it's gitignored, so a fresh
-// clone/checkout won't have it — without this, image uploads would fail).
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-  console.log('Created missing uploads/ directory.');
+async function ensureImageColumns() {
+  await pool.query('ALTER TABLE profile MODIFY avatar_url LONGTEXT NULL');
+  await pool.query('ALTER TABLE projects MODIFY image_url LONGTEXT NULL');
 }
 
 // ---------- Middleware ----------
 app.use(cors()); // allow requests from the Vue frontend (any origin, for dev simplicity)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Serve uploaded images statically
-app.use('/uploads', express.static(uploadsDir));
 
 // ---------- Routes ----------
 app.use('/api/auth', require('./routes/auth'));
@@ -50,6 +43,14 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5050;
-app.listen(PORT, () => {
-  console.log(`Portfolio API server running on http://localhost:${PORT}`);
-});
+
+ensureImageColumns()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Portfolio API server running on http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error('Failed to prepare database schema for image uploads.', err);
+    process.exit(1);
+  });

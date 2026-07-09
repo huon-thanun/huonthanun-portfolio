@@ -1,12 +1,6 @@
 <template>
-  <button
-    :type="type"
-    :form="form"
-    class="btn"
-    :class="[variantClass, sizeClass]"
-    :disabled="disabled || loading"
-    @click="$emit('click', $event)"
-  >
+  <button :type="type" :form="form" class="btn" :class="[variantClass, sizeClass]" :disabled="disabled || loading"
+    @click="$emit('click', $event)">
     <slot>{{ loading ? loadingText : label }}</slot>
   </button>
 </template>

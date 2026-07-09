@@ -8,7 +8,7 @@
         <div class="hero__text">
           <button v-if="profile.avatar_url" class="hero__avatar" @click="showProfileDetail = true"
             aria-label="View profile details">
-            <img :src="profile.avatar_url" :alt="profile.full_name" @error="onImageError" />
+            <img :src="mediaUrl(profile.avatar_url)" :alt="profile.full_name" @error="onImageError" />
           </button>
           <p class="eyebrow">available for work</p>
           <h1 class="hero__title">
@@ -17,8 +17,14 @@
           </h1>
           <p class="hero__tagline">{{ profile.tagline || 'Junior full-stack web developer.' }}</p>
           <div class="hero__actions">
-            <a href="#projects" class="btn btn-primary">view my work</a>
-            <a href="#contact" class="btn">get in touch</a>
+            <a href="#projects" class="btn btn-primary">
+              <i class="bi bi-kanban" aria-hidden="true"></i>
+              view my work
+            </a>
+            <a href="#contact" class="btn">
+              <i class="bi bi-chat-dots" aria-hidden="true"></i>
+              get in touch
+            </a>
           </div>
         </div>
 
@@ -92,7 +98,7 @@
         <div class="projects__grid">
           <article v-for="p in projects" :key="p.id" class="project-card card" @click="openProjectDetail(p)">
             <div class="project-card__image" v-if="p.image_url">
-              <img :src="p.image_url" :alt="p.title" @error="onImageError" />
+              <img :src="mediaUrl(p.image_url)" :alt="p.title" @error="onImageError" />
             </div>
             <div class="project-card__body">
               <h3 class="project-card__title">{{ p.title }}</h3>
@@ -171,10 +177,22 @@
       <div class="container footer__inner">
         <p class="mono">© {{ new Date().getFullYear() }} {{ profile.full_name || 'Portfolio' }}</p>
         <div class="footer__social">
-          <a v-if="profile.github_url" :href="profile.github_url" target="_blank">GitHub</a>
-          <a v-if="profile.linkedin_url" :href="profile.linkedin_url" target="_blank">LinkedIn</a>
-          <a v-if="profile.facebook_url" :href="profile.facebook_url" target="_blank">Facebook</a>
-          <router-link to="/admin/login">Admin</router-link>
+          <a v-if="profile.github_url" :href="profile.github_url" target="_blank">
+            <i class="bi bi-github" aria-hidden="true"></i>
+            GitHub
+          </a>
+          <a v-if="profile.linkedin_url" :href="profile.linkedin_url" target="_blank">
+            <i class="bi bi-linkedin" aria-hidden="true"></i>
+            LinkedIn
+          </a>
+          <a v-if="profile.facebook_url" :href="profile.facebook_url" target="_blank">
+            <i class="bi bi-facebook" aria-hidden="true"></i>
+            Facebook
+          </a>
+          <router-link to="/admin/login">
+            <i class="bi bi-shield-lock" aria-hidden="true"></i>
+            Admin
+          </router-link>
         </div>
       </div>
     </footer>
@@ -183,7 +201,7 @@
     <BaseModal v-model="showProjectDetail" :title="viewingProject?.title || ''" size="lg">
       <div v-if="viewingProject" class="detail">
         <div v-if="viewingProject.image_url" class="detail__image">
-          <img :src="viewingProject.image_url" :alt="viewingProject.title" @error="onImageError" />
+          <img :src="mediaUrl(viewingProject.image_url)" :alt="viewingProject.title" @error="onImageError" />
         </div>
         <p class="detail__desc">{{ viewingProject.description || 'No description provided.' }}</p>
         <div class="detail__tech">
@@ -202,7 +220,7 @@
     <BaseModal v-model="showProfileDetail" :title="profile.full_name || ''">
       <div class="detail">
         <div v-if="profile.avatar_url" class="detail__avatar">
-          <img :src="profile.avatar_url" :alt="profile.full_name" @error="onImageError" />
+          <img :src="mediaUrl(profile.avatar_url)" :alt="profile.full_name" @error="onImageError" />
         </div>
         <p class="detail__title-line">{{ profile.title }}</p>
         <p class="detail__desc">{{ profile.about_text }}</p>
@@ -245,8 +263,13 @@ import messageService from '../../services/messageService'
 import { useToastStore } from '../../stores/toastStore'
 import { validate, isRequired, isEmail, minLength } from '../../utils/validators'
 import { onImageError } from '../../utils/imageFallback.js'
+import { resolveMediaUrl } from '../../utils/apiUrls'
 
 const toast = useToastStore()
+
+function mediaUrl(path) {
+  return resolveMediaUrl(path)
+}
 
 const profile = ref({})
 const projects = ref([])

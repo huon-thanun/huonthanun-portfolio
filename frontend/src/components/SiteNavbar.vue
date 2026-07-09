@@ -2,7 +2,7 @@
   <header class="nav" :class="{ 'nav--scrolled': scrolled }">
     <div class="container nav__inner">
       <a href="#home" class="nav__logo mono">
-        <span class="nav__logo-bracket">&lt;</span>dev<span class="nav__logo-bracket">/&gt;</span>
+        <span class="nav__logo-bracket">&lt;</span>portfolio<span class="nav__logo-bracket">/&gt;</span>
       </a>
 
       <nav class="nav__links" :class="{ 'nav__links--open': menuOpen }">
@@ -99,7 +99,10 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 }
 
 @media (max-width: 768px) {
-  .nav__toggle { display: flex; }
+  .nav__toggle {
+    display: flex;
+  }
+
   .nav__links {
     position: absolute;
     top: 72px;
@@ -112,6 +115,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
     gap: var(--space-4);
     display: none;
   }
+
   .nav__links--open {
     display: flex;
   }

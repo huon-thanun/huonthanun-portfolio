@@ -13,7 +13,7 @@
     <div class="profile-grid">
       <div class="card profile-side">
         <div class="profile-side__avatar" v-if="profile.avatar_url">
-          <img :src="profile.avatar_url" :alt="profile.full_name" @error="onImageError" />
+          <img :src="mediaUrl(profile.avatar_url)" :alt="profile.full_name" @error="onImageError" />
         </div>
         <div v-else class="profile-side__avatar profile-side__avatar--empty">
           {{ initials }}
@@ -102,6 +102,7 @@ import profileService from '../../services/profileService'
 import { useToastStore } from '../../stores/toastStore'
 import { validate, isRequired, isEmail, isUrl } from '../../utils/validators'
 import { onImageError } from '../../utils/imageFallback'
+import { resolveMediaUrl } from '../../utils/apiUrls'
 
 const toast = useToastStore()
 
@@ -120,6 +121,10 @@ const emptyForm = () => ({
   location: '', avatar_url: '', resume_url: '', github_url: '', linkedin_url: '', facebook_url: ''
 })
 const form = reactive(emptyForm())
+
+function mediaUrl(path) {
+  return resolveMediaUrl(path)
+}
 
 async function load() {
   try {
