@@ -98,7 +98,10 @@ onUnmounted(() => {
   line-height: 1;
   padding: 0;
 }
-.modal__close:hover { color: var(--accent); }
+
+.modal__close:hover {
+  color: var(--accent);
+}
 
 .modal__body {
   padding: var(--space-6);
@@ -111,10 +114,13 @@ onUnmounted(() => {
   border-top: 1px solid var(--border);
 }
 
-.modal-fade-enter-active, .modal-fade-leave-active {
+.modal-fade-enter-active,
+.modal-fade-leave-active {
   transition: opacity 0.2s ease;
 }
-.modal-fade-enter-from, .modal-fade-leave-to {
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
   opacity: 0;
 }
 </style>

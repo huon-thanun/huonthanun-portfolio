@@ -4,17 +4,9 @@
       {{ label }}
       <span v-if="required" class="field__required">*</span>
     </label>
-    <input
-      :id="id"
-      :type="type"
-      :value="modelValue"
-      :placeholder="placeholder"
-      :min="min"
-      :max="max"
-      :step="step"
+    <input :id="id" :type="type" :value="modelValue" :placeholder="placeholder" :min="min" :max="max" :step="step"
       :class="{ 'field-invalid': error }"
-      @input="$emit('update:modelValue', type === 'number' ? Number($event.target.value) : $event.target.value)"
-    />
+      @input="$emit('update:modelValue', type === 'number' ? Number($event.target.value) : $event.target.value)" />
     <p v-if="error" class="helper-error">{{ error }}</p>
   </div>
 </template>

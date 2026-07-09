@@ -4,14 +4,8 @@
       {{ label }}
       <span v-if="required" class="field__required">*</span>
     </label>
-    <textarea
-      :id="id"
-      :value="modelValue"
-      :placeholder="placeholder"
-      :rows="rows"
-      :class="{ 'field-invalid': error }"
-      @input="$emit('update:modelValue', $event.target.value)"
-    ></textarea>
+    <textarea :id="id" :value="modelValue" :placeholder="placeholder" :rows="rows" :class="{ 'field-invalid': error }"
+      @input="$emit('update:modelValue', $event.target.value)"></textarea>
     <p v-if="error" class="helper-error">{{ error }}</p>
   </div>
 </template>

@@ -18,6 +18,7 @@ import { ref } from 'vue'
 import uploadService from '../services/uploadService'
 import { useToastStore } from '../stores/toastStore'
 import { onImageError } from '../utils/imageFallback'
+import { resolveMediaUrl } from '../utils/apiUrls'
 
 defineProps({ modelValue: { type: String, default: '' } })
 const emit = defineEmits(['update:modelValue'])
@@ -31,7 +32,7 @@ async function handleFile(e) {
   uploading.value = true
   try {
     const { data } = await uploadService.upload(file)
-    emit('update:modelValue', data.url)
+    emit('update:modelValue', resolveMediaUrl(data.url))
     toast.success('Image uploaded.')
   } catch (err) {
     toast.error(err.response?.data?.message || 'Upload failed.')
