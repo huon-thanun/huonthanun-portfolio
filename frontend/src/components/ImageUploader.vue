@@ -15,10 +15,8 @@
 
 <script setup>
 import { ref } from 'vue'
-import uploadService from '../services/uploadService'
 import { useToastStore } from '../stores/toastStore'
 import { onImageError } from '../utils/imageFallback'
-import { resolveMediaUrl } from '../utils/apiUrls'
 
 defineProps({ modelValue: { type: String, default: '' } })
 const emit = defineEmits(['update:modelValue'])
@@ -26,16 +24,38 @@ const emit = defineEmits(['update:modelValue'])
 const toast = useToastStore()
 const uploading = ref(false)
 
+const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+
 async function handleFile(e) {
   const file = e.target.files[0]
   if (!file) return
+
+  if (!CLOUD_NAME || !UPLOAD_PRESET) {
+    toast.error('Image upload is not configured. Set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET in frontend/.env')
+    return
+  }
+
   uploading.value = true
   try {
-    const { data } = await uploadService.upload(file)
-    emit('update:modelValue', resolveMediaUrl(data.url))
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('upload_preset', UPLOAD_PRESET)
+
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+      method: 'POST',
+      body: formData
+    })
+    const data = await res.json()
+
+    if (!res.ok) {
+      throw new Error(data.error?.message || 'Upload failed.')
+    }
+
+    emit('update:modelValue', data.secure_url)
     toast.success('Image uploaded.')
   } catch (err) {
-    toast.error(err.response?.data?.message || 'Upload failed.')
+    toast.error(err.message || 'Upload failed.')
   } finally {
     uploading.value = false
   }
