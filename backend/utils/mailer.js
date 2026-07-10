@@ -1,5 +1,11 @@
 const nodemailer = require('nodemailer');
+const dns = require('dns');
 require('dotenv').config();
+
+// Some hosts (e.g. Render) can't route IPv6 to Gmail's SMTP servers, which
+// causes "ENETUNREACH" errors when Node resolves an IPv6 address first.
+// Forcing Node's DNS resolver to prefer IPv4 results fixes this globally.
+dns.setDefaultResultOrder('ipv4first');
 
 // Reads SMTP settings from .env. Works with Gmail (using an App Password),
 // or any other SMTP provider (Mailtrap, SendGrid SMTP, Outlook, etc).
@@ -15,7 +21,8 @@ function getTransporter() {
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS
-    }
+    },
+    family: 4 // force IPv4 — avoids ENETUNREACH on hosts without IPv6 route to Gmail
   });
 }
 
