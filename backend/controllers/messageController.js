@@ -1,5 +1,5 @@
 const pool = require('../config/db');
-const { sendContactNotification } = require('../utils/mailer');
+const { sendContactNotification } = require('../utils/resendMailer');
 
 // POST /api/messages  (public - contact form submit)
 exports.create = async (req, res) => {
