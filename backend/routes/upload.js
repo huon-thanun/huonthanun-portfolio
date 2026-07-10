@@ -8,10 +8,8 @@ router.post('/', authMiddleware, upload.single('image'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded.' });
   }
-
-  const mimeType = req.file.mimetype || 'image/png';
-  const dataUrl = `data:${mimeType};base64,${req.file.buffer.toString('base64')}`;
-  res.json({ url: dataUrl });
+  const fileUrl = `/uploads/${req.file.filename}`;
+  res.json({ url: fileUrl });
 });
 
 module.exports = router;
