@@ -11,10 +11,10 @@ const pool = mysql.createPool({
   connectionLimit: 10,
   queueLimit: 0,
   // ត្រូវតែបន្ថែមបន្ទាត់ខាងក្រោមនេះ៖
-  // ssl: {
-  //   minVersion: 'TLSv1.2',
-  //   rejectUnauthorized: true
-  // }
+  ssl: {
+    minVersion: 'TLSv1.2',
+    rejectUnauthorized: true
+  }
 });
 
 module.exports = pool;
