@@ -209,4 +209,16 @@ onMounted(load)
   white-space: pre-wrap;
   line-height: 1.6;
 }
+
+@media (max-width: 480px) {
+  .msg__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+
+  .msg__date {
+    align-self: flex-start;
+  }
+}
 </style>

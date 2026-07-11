@@ -234,12 +234,18 @@ onMounted(load)
 
 .profile-side__name {
   font-size: 1.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .profile-side__title {
   color: var(--accent);
   font-size: 0.82rem;
   margin-top: var(--space-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .profile-side__tagline {
@@ -247,6 +253,11 @@ onMounted(load)
   font-size: 0.9rem;
   margin-top: var(--space-4);
   line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .profile-side__links {
@@ -295,6 +306,7 @@ onMounted(load)
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: var(--space-4);
+  min-width: 0; /* required for ellipsis to work inside CSS grid cell */
 }
 
 .info-tile__label {
@@ -307,7 +319,9 @@ onMounted(load)
 
 .info-tile__value {
   font-size: 0.92rem;
-  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media (max-width: 860px) {
@@ -317,6 +331,10 @@ onMounted(load)
 
   .profile-info-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .profile-side {
+    padding: var(--space-6) var(--space-5);
   }
 }
 
@@ -330,6 +348,10 @@ onMounted(load)
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-4);
+}
+
+.form-row > * {
+  min-width: 0;
 }
 
 @media (max-width: 700px) {

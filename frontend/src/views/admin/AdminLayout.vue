@@ -1,22 +1,28 @@
 <template>
   <div class="admin">
-    <aside class="admin__sidebar">
+    <button class="admin__toggle" @click="sidebarOpen = !sidebarOpen" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div v-if="sidebarOpen" class="admin__backdrop" @click="sidebarOpen = false"></div>
+
+    <aside class="admin__sidebar" :class="{ 'admin__sidebar--open': sidebarOpen }">
       <div class="admin__brand mono">
         <span class="admin__brand-bracket">&lt;</span>admin<span class="admin__brand-bracket">/&gt;</span>
       </div>
 
       <nav class="admin__nav">
-        <router-link to="/admin/dashboard" class="admin__link">Dashboard</router-link>
-        <router-link to="/admin/profile" class="admin__link">Profile</router-link>
-        <router-link to="/admin/projects" class="admin__link">Projects</router-link>
-        <router-link to="/admin/skills" class="admin__link">Skills</router-link>
-        <router-link to="/admin/experience" class="admin__link">Experience</router-link>
-        <router-link to="/admin/education" class="admin__link">Education</router-link>
-        <router-link to="/admin/messages" class="admin__link">
+        <router-link to="/admin/dashboard" class="admin__link" @click="sidebarOpen = false">Dashboard</router-link>
+        <router-link to="/admin/profile" class="admin__link" @click="sidebarOpen = false">Profile</router-link>
+        <router-link to="/admin/projects" class="admin__link" @click="sidebarOpen = false">Projects</router-link>
+        <router-link to="/admin/skills" class="admin__link" @click="sidebarOpen = false">Skills</router-link>
+        <router-link to="/admin/experience" class="admin__link" @click="sidebarOpen = false">Experience</router-link>
+        <router-link to="/admin/education" class="admin__link" @click="sidebarOpen = false">Education</router-link>
+        <router-link to="/admin/messages" class="admin__link" @click="sidebarOpen = false">
           Messages
           <span v-if="unread" class="admin__badge">{{ unread }}</span>
         </router-link>
-        <router-link to="/admin/settings" class="admin__link">Settings</router-link>
+        <router-link to="/admin/settings" class="admin__link" @click="sidebarOpen = false">Settings</router-link>
       </nav>
 
       <div class="admin__foot">
@@ -32,7 +38,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/authStore'
 import profileService from '../../services/profileService'
@@ -40,6 +46,7 @@ import profileService from '../../services/profileService'
 const auth = useAuthStore()
 const router = useRouter()
 const unread = ref(0)
+const sidebarOpen = ref(false)
 
 function logout() {
   auth.logout()
@@ -55,6 +62,8 @@ async function fetchUnread() {
   }
 }
 
+watch(() => router.currentRoute.value.path, () => { sidebarOpen.value = false })
+
 onMounted(fetchUnread)
 </script>
 
@@ -63,6 +72,34 @@ onMounted(fetchUnread)
   display: grid;
   grid-template-columns: 240px 1fr;
   min-height: 100vh;
+}
+
+.admin__toggle {
+  display: none;
+  position: fixed;
+  top: var(--space-4);
+  left: var(--space-4);
+  z-index: 200;
+  flex-direction: column;
+  gap: 5px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+}
+
+.admin__toggle span {
+  width: 20px;
+  height: 2px;
+  background: var(--text);
+}
+
+.admin__backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 8, 14, 0.6);
+  z-index: 150;
 }
 
 .admin__sidebar {
@@ -138,31 +175,51 @@ onMounted(fetchUnread)
 .admin__main {
   padding: var(--space-7);
   overflow-x: hidden;
+  min-width: 0;
 }
 
+/* ---------- Mobile: sidebar becomes a slide-in drawer ---------- */
 @media (max-width: 900px) {
   .admin {
     grid-template-columns: 1fr;
   }
 
+  .admin__toggle {
+    display: flex;
+  }
+
+  .admin__backdrop {
+    display: block;
+  }
+
   .admin__sidebar {
-    position: static;
-    height: auto;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    max-width: 80vw;
+    height: 100vh;
+    z-index: 180;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: var(--shadow-lg);
   }
 
-  .admin__nav {
-    flex-direction: row;
-    flex-wrap: wrap;
+  .admin__sidebar--open {
+    transform: translateX(0);
   }
 
-  .admin__foot {
-    flex-direction: row;
-    margin-left: auto;
-    border-top: none;
-    padding-top: 0;
+  .admin__main {
+    padding: var(--space-6) var(--space-4);
+    padding-top: calc(var(--space-4) + 52px);
+    /* room for toggle button */
+  }
+}
+
+@media (max-width: 480px) {
+  .admin__main {
+    padding: var(--space-5) var(--space-3);
+    padding-top: calc(var(--space-3) + 52px);
   }
 }
 </style>

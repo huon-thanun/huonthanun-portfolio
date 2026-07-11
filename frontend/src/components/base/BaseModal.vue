@@ -58,11 +58,10 @@ onUnmounted(() => {
   background: rgba(4, 8, 14, 0.65);
   backdrop-filter: blur(3px);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   padding: var(--space-7) var(--space-5);
   z-index: 1000;
-  overflow-y: auto;
 }
 
 .modal {
@@ -71,7 +70,10 @@ onUnmounted(() => {
   border-radius: var(--radius-lg);
   width: 100%;
   max-width: 520px;
+  max-height: 85vh;
   box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
 }
 
 .modal--lg {
@@ -84,6 +86,7 @@ onUnmounted(() => {
   justify-content: space-between;
   padding: var(--space-5) var(--space-6);
   border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 .modal__title {
@@ -105,6 +108,11 @@ onUnmounted(() => {
 
 .modal__body {
   padding: var(--space-6);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+  min-height: 0;
+  /* required so flex child can actually shrink and scroll */
 }
 
 .modal__foot {
@@ -112,6 +120,7 @@ onUnmounted(() => {
   gap: var(--space-3);
   padding: var(--space-5) var(--space-6);
   border-top: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 .modal-fade-enter-active,
@@ -122,5 +131,37 @@ onUnmounted(() => {
 .modal-fade-enter-from,
 .modal-fade-leave-to {
   opacity: 0;
+}
+
+/* ---------- Mobile: near-fullscreen modal, guaranteed room for footer ---------- */
+@media (max-width: 600px) {
+  .modal-overlay {
+    padding: var(--space-3);
+    align-items: flex-end;
+  }
+
+  .modal {
+    max-height: 92vh;
+    max-height: 92dvh;
+    /* accounts for mobile browser toolbar height changes */
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
+  .modal__head,
+  .modal__body,
+  .modal__foot {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+
+  .modal__foot {
+    flex-direction: column;
+  }
+
+  .modal__foot :deep(button),
+  .modal__foot :deep(a) {
+    width: 100%;
+    justify-content: center;
+  }
 }
 </style>
