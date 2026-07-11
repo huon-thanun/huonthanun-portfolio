@@ -198,6 +198,10 @@ onMounted(load)
   gap: var(--space-4);
 }
 
+.form-row > * {
+  min-width: 0;
+}
+
 .list {
   display: flex;
   flex-direction: column;
@@ -213,16 +217,23 @@ onMounted(load)
 
 .list-item__body {
   flex: 1;
+  min-width: 0;
 }
 
 .list-item__body h3 {
   font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .list-item__meta {
   color: var(--text-faint);
   font-size: 0.78rem;
   margin-top: var(--space-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .list-item__actions {
@@ -264,9 +275,38 @@ onMounted(load)
   text-align: right;
 }
 
+@media (max-width: 860px) {
+  .list-item {
+    flex-wrap: wrap;
+  }
+
+  .list-item__actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: var(--space-2);
+  }
+}
+
 @media (max-width: 700px) {
   .form-row {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 580px) {
+  .list-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .list-item__thumb {
+    width: 100%;
+    height: 160px;
+  }
+
+  .list-item__actions {
+    justify-content: flex-end;
+    flex-wrap: wrap;
   }
 }
 </style>

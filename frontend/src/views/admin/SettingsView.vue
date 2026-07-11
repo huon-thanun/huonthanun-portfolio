@@ -105,6 +105,10 @@ async function submit() {
   max-width: 900px;
 }
 
+.settings-grid > * {
+  min-width: 0;
+}
+
 .settings-info {
   padding: var(--space-6);
   background: linear-gradient(180deg, var(--accent-soft), transparent 70%), var(--bg-elev);

@@ -189,6 +189,10 @@
             <i class="bi bi-facebook" aria-hidden="true"></i>
             Facebook
           </a>
+          <a v-if="profile.resume_url" :href="profile.resume_url" target="_blank">
+            <i class="bi bi-file-earmark-person" aria-hidden="true"></i>
+            Resume
+          </a>
           <router-link to="/admin/login">
             <i class="bi bi-shield-lock" aria-hidden="true"></i>
             Admin
@@ -704,7 +708,7 @@ onMounted(async () => {
   margin-bottom: var(--space-4);
   display: -webkit-box;
   -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;  
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -773,6 +777,10 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-4);
+}
+
+.contact__row > * {
+  min-width: 0;
 }
 
 :deep(.field-invalid) {
